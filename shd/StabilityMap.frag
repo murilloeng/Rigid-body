@@ -8,6 +8,58 @@ layout(std140, binding = 0) uniform screen
 	uint height;
 };
 
+float w = width;
+float h = height;
+float gt_min = 0;
+float gt_max = 2;
+float gn_min = 0;
+float gn_max = 2;
+float m = min(w, h);
+
+float segmentDistance(vec2 xp, vec2 x1, vec2 x2)
+{
+	float t = dot(xp - x1, x2 - x1) / dot(x2 - x1, x2 - x1);
+	return distance(xp, x1 + clamp(t, 0.0, 1.0) * (x2 - x1));
+}
+
+vec3 palette(float v, float v_min, float v_max)
+{
+	//data
+	const vec3 colors[] = {
+		vec3(0.0, 0.0, 0.5),
+		vec3(0.0, 0.0, 1.0),
+		vec3(0.0, 0.5, 1.0),
+		vec3(0.0, 1.0, 1.0),
+		vec3(0.5, 1.0, 0.5),
+		vec3(1.0, 1.0, 0.0),
+		vec3(1.0, 0.5, 0.0),
+		vec3(1.0, 0.0, 0.0),
+		vec3(0.5, 0.0, 0.0)
+	};
+	const uint colors_count = 9;
+	//scaling
+	v = max(min(v, v_max), v_min);
+	v = (colors_count - 1) * (v - v_min) / (v_max - v_min);
+	//indexes
+	const float x = fract(v);
+	const uint b = uint(ceil(v));
+	const uint a = uint(floor(v));
+	//return
+	return (1 - x) * colors[a] + x * colors[b];
+}
+
+bool boundaries(float gt, float gn, bool inner)
+{
+	return 
+		segmentDistance(vec2(gt, gn), vec2(1.0, 0.0), vec2(2.0, 1.0)) < 4e-3 ||
+		segmentDistance(vec2(gt, gn), vec2(0.0, 1.0), vec2(1.0, 2.0)) < 4e-3 ||
+		segmentDistance(vec2(gt, gn), vec2(1.0, 0.0), vec2(0.0, 1.0)) < 4e-3 ||
+		(inner && segmentDistance(vec2(gt, gn), vec2(0.0, 1.0), vec2(2.0, 1.0)) < 4e-3) || 
+		(inner && segmentDistance(vec2(gt, gn), vec2(1.0, 0.0), vec2(1.0, 2.0)) < 4e-3) || 
+		(inner && segmentDistance(vec2(gt, gn), vec2(0.5, 0.5), vec2(0.5, 1.5)) < 4e-3) ||
+		(inner && segmentDistance(vec2(gt, gn), vec2(0.5, 0.5), vec2(1.5, 0.5)) < 4e-3);
+}
+
 bool zone_test(uint zone, float gt, float gn)
 {
 	return 
@@ -17,26 +69,21 @@ bool zone_test(uint zone, float gt, float gn)
 		zone == 3 ? (gt > 0.5 && gt < 1.0) && (gn > 0.5 && gn < 1.0) : 
 		zone == 4 ? (gt > 0.5 && gt < 1.0 && gn > 1.0) || (gt > 1.0 && gn > 0.5 && gn < 1.0) : true;
 }
-vec4 zone_color(float gt, float gn)
+uint zone_search(float gt, float gn)
 {
-	return
-		zone_test(0, gt, gn) ? vec4(1, 0, 0, 1) : 
-		zone_test(1, gt, gn) ? vec4(0, 1, 0, 1) : 
-		zone_test(2, gt, gn) ? vec4(0, 0, 1, 1) : 
-		zone_test(3, gt, gn) ? vec4(1, 1, 0, 1) : 
-		zone_test(4, gt, gn) ? vec4(1, 0, 1, 1) : vec4(1, 1, 1, 1);
+	for(uint i = 0; i < 5; i++)
+	{
+		if(zone_test(i, gt, gn)) return i;
+	}
+	return 5;
+}
+vec3 zone_color(float gt, float gn)
+{
+	return palette(zone_search(gt, gn), 0, 4);
 }
 
 void main(void)
 {
-	//data
-	const float w = width;
-	const float h = height;
-	const float gt_min = 0;
-	const float gt_max = 2;
-	const float gn_min = 0;
-	const float gn_max = 2;
-	const float m = min(w, h);
 	//inertia
 	const float gt = w / m * ((gt_max - gt_min) * gl_FragCoord.x / w + gt_min);
 	const float gn = h / m * ((gn_max - gn_min) * gl_FragCoord.y / h + gn_min);
@@ -66,10 +113,17 @@ void main(void)
 	const float w4 = sqrt((-g1 - sqrt(q2)) / (2 * f1));
 	const float w5 = sqrt((-g1 + sqrt(q2)) / (2 * f1));
 	//boundaries
-	if(!zone_test(3, gt, gn)) discard;
+	if(boundaries(gt, gn, true))
+	{
+		fragment_color = vec4(0, 0, 0, 1);
+		return;
+	}
+	//discard
+	// if(!zone_test(3, gt, gn) && !zone_test(4, gt, gn)) discard;
 	if(gt < gt_min || gt > gt_max) discard;
 	if(gn < gn_min || gn > gn_max) discard;
 	if(abs(gt - gn) > 1 || gt + gn < 1) discard;
 	//fragment
-	fragment_color = w1 < w2 ? vec4(0, 0, 1, 1) : vec4(1, 0, 0, 1);
+	fragment_color = vec4(zone_color(gt, gn), 1);
+	// fragment_color = w1 < w5 ? vec4(0, 0, 1, 1) : vec4(1, 0, 0, 1);
 }

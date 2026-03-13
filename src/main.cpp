@@ -8,11 +8,6 @@
 #include "Rigid-body/inc/scenes.hpp"
 #include "Rigid-body/inc/StabilityMap.hpp"
 
-static void test_stability_map(void)
-{
-	StabilityMap map;
-	map.start();
-}
 static void test_vertical_symmetric(double gs, bool stability)
 {
 	//data
@@ -105,7 +100,7 @@ static void test_tilted(double g1, double g2, double wp, bool axis, bool stabili
 int main(int argc, char** argv)
 {
 	//test
-	test_stability_map();
+	StabilityMap().start();
 	//return
 	return 0;
 }

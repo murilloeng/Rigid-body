@@ -2,6 +2,11 @@
 #include <cstdint>
 #include <stdexcept>
 
+//stbi
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb/stb_image_write.h>
+
+
 //Rigid body
 #include "Rigid-body/inc/StabilityMap.hpp"
 
@@ -66,6 +71,16 @@ static void callback_keyboard(GLFWwindow* window, int32_t key, int32_t scancode,
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
+	if(key == GLFW_KEY_P)
+	{
+		int width, height;
+		stbi_flip_vertically_on_write(true);
+		glfwGetWindowSize(window, &width, &height);
+		GLubyte* pixels = new GLubyte[3 * width * height];
+		glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+		stbi_write_png("StabilityMap.png", width, height, 3, pixels, 3 * width);
+		delete[] pixels;
+	}
 }
 
 //constructor
@@ -88,13 +103,21 @@ StabilityMap::~StabilityMap(void)
 //start
 void StabilityMap::start(void)
 {
+	glfwSetTime(0);
+	double t1 = 0, t2;
 	while(!glfwWindowShouldClose(m_window))
 	{
+		//time
+		t2 = glfwGetTime();
 		//animations
 		glfwPollEvents();
+		m_scene->update_animations();
 		//draw
 		m_scene->draw();
 		glfwSwapBuffers(m_window);
+		//framerate
+		printf("FPS: %d\n", uint32_t(1 / (t2 - t1)));
+		t1 = t2;
 	}
 }
 void StabilityMap::size(uint32_t width, uint32_t height)
@@ -116,7 +139,7 @@ void StabilityMap::setup_glfw(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	m_window = glfwCreateWindow(700, 700, "Canvas", nullptr, nullptr);
+	m_window = glfwCreateWindow(900, 900, "Canvas", nullptr, nullptr);
 	//check
 	if(!m_window)
 	{
@@ -141,6 +164,7 @@ void StabilityMap::setup_scene(void)
 	glfwGetWindowSize(m_window, &width, &height);
 	//setup
 	m_ubo->bind_base(0);
+	m_scene->background("white");
 	m_ubo->allocate(2 * sizeof(uint32_t));
 	m_scene->add_object(new StabilityMapObject);
 	//callback
