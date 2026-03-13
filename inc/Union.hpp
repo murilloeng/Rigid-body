@@ -3,8 +3,8 @@
 //std
 #include <vector>
 
-//rigid-body
-#include "rigid-body/inc/Interval.hpp"
+//Rigid-body
+#include "Rigid-body/inc/Interval.hpp"
 
 class Union
 {

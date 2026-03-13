@@ -1,9 +1,9 @@
 #pragma once
 
-//rigid
-#include "rigid-body/inc/Rigid.hpp"
+//Rigid-body
+#include "Rigid-body/inc/RigidBody.hpp"
 
-class Top : public Rigid
+class Top : public RigidBody
 {
 public:
 	//constructors

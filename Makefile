@@ -1,9 +1,9 @@
 #compiler
 CXX = g++
-INCS += -I .. -I ../external/cpp/inc
+INCS += -I .. -I /usr/include/freetype2
 WARS += -Wall -Wno-unused-variable -Wno-unused-result
-LIBS += -l gmsh -l umfpack -l lapack -l quadrule -l GLEW -l GL -l glut -l freetype
 WARS += -Wno-format-security -Wno-return-type -Wno-unused-function -Wformat-overflow=0
+LIBS += -l gmsh -l umfpack -l lapack -l quadrule -l GLEW -l GL -l glut -l freetype -l fftw3 -l glfw
 CXXFLAGS += -std=c++20 -fPIC -pipe -fopenmp -MT $@ -MMD -MP -MF $(subst .o,.d, $@) $(DEFS) $(INCS) $(WARS)
 
 #mode
@@ -16,7 +16,7 @@ else
 endif
 
 #ouput
-out = dist/$(mode)/rigid.out
+out = dist/$(mode)/rigid-body.out
 
 #sources
 src := $(sort $(shell find -path './src/*.cpp'))
@@ -38,15 +38,15 @@ debug :
 	@gdb $(out) -x gdb.txt
 
 math :
-	@cd ../Math && make -f Makefile m=$m
+	+@cd ../Math && $(MAKE) -f Makefile m=$m
 
 canvas :
-	@cd ../Canvas && make -f Makefile m=$m
+	+@cd ../Canvas && $(MAKE) -f Makefile m=$m
 
 $(out) : math canvas $(obj)
 	@echo 'executable($(mode)): $@'
 	@mkdir -p $(dir $@) && rm -rf $@
-	@$(CXX) -fopenmp -o $(out) $(obj) ../Math/dist/$(mode)/libmath.so ../Canvas/dist/$(mode)/libcanvas.so $(LIBS)
+	@$(CXX) -fopenmp -o $(out) $(obj) ../Math/Math/dist/$(mode)/libmath.so ../Canvas/Canvas/dist/$(mode)/libcanvas.so $(LIBS)
 
 build/$(mode)/%.o : src/%.cpp build/$(mode)/%.d
 	@echo 'compiling($(mode)): $<'

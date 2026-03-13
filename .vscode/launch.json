@@ -6,7 +6,7 @@
 			"name": "gdb",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/dist/debug/rigid.out",
+			"program": "${workspaceFolder}/dist/debug/rigid-body.out",
 			"args": [],
 			"MIMode": "gdb",
 			"environment": [],

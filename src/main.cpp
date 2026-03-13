@@ -1,44 +1,18 @@
 //std
 #include <cmath>
 #include <cstdio>
+#include <stdexcept>
 
-//rigid-body
-#include "rigid-body/inc/Map.hpp"
-#include "rigid-body/inc/Top.hpp"
-#include "rigid-body/inc/scenes.hpp"
+//Rigid-body
+#include "Rigid-body/inc/Top.hpp"
+#include "Rigid-body/inc/scenes.hpp"
+#include "Rigid-body/inc/StabilityMap.hpp"
 
-static void compute_maps(uint32_t mode, bool full)
+static void test_stability_map(void)
 {
-	//data
-	Map map;
-	map.mode(mode);
-	map.full(full);
-	//compute
-	if(!full)
-	{
-		if(mode == 0)
-		{
-			for(uint32_t i = 0; i < 6; i++)
-			{
-				map.state(2, 1.50 + 0.25 * i);
-				map.compute();
-			}
-		}
-		else
-		{
-			for(uint32_t i = 0; i < 6; i++)
-			{
-				map.angle(i == 0 ? 1 : 15 * i);
-				map.compute();
-			}
-		}
-	}
-	else
-	{
-		map.compute();
-	}
+	StabilityMap map;
+	map.start();
 }
-
 static void test_vertical_symmetric(double gs, bool stability)
 {
 	//data
@@ -131,11 +105,7 @@ static void test_tilted(double g1, double g2, double wp, bool axis, bool stabili
 int main(int argc, char** argv)
 {
 	//test
-	/*Map map;
-	map.mode(0);
-	map.full(true);
-	map.compute();*/
-	scene_motion_2(argc, argv);
+	test_stability_map();
 	//return
 	return 0;
 }

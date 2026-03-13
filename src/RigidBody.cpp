@@ -7,19 +7,21 @@
 //canvas
 #include "Canvas/Canvas/inc/Objects/Object.hpp"
 
-//rigid
-#include "rigid-body/inc/Rigid.hpp"
+//Rigid
+#include "Rigid-body/inc/RigidBody.hpp"
 
 //constructor
-Rigid::Rigid(void) : 
-	m_J(math::mode::zeros), m_iteration_max(10), m_state_old{0, 0, 0, 1}, m_velocity_old{0, 0, 0},
-	m_state_data(nullptr), m_energy_data(nullptr), m_velocity_data(nullptr), m_acceleration_data(nullptr)
+RigidBody::RigidBody(void) : 
+	m_J(math::mode::zeros), m_iteration_max(10), 
+	m_state_data(nullptr), m_energy_data(nullptr), 
+	m_velocity_data(nullptr), m_acceleration_data(nullptr), 
+	m_state_old{0, 0, 0, 1}, m_velocity_old{0, 0, 0}
 {
 	return;
 }
 
 //destructor
-Rigid::~Rigid(void)
+RigidBody::~RigidBody(void)
 {
 	delete[] m_state_data;
 	delete[] m_energy_data;
@@ -28,7 +30,7 @@ Rigid::~Rigid(void)
 }
 
 //solver
-void Rigid::solve(void)
+void RigidBody::solve(void)
 {
 	//data
 	const double b = 0.25;
@@ -81,7 +83,7 @@ void Rigid::solve(void)
 		}
 	}
 }
-void Rigid::setup(void)
+void RigidBody::setup(void)
 {
 	//delete
 	delete[] m_state_data;
@@ -94,7 +96,7 @@ void Rigid::setup(void)
 	m_velocity_data = new double[3 * (m_steps + 1)];
 	m_acceleration_data = new double[3 * (m_steps + 1)];
 }
-void Rigid::record(void)
+void RigidBody::record(void)
 {
 	const math::vec3 w_new(m_velocity_new);
 	memcpy(m_state_old, m_state_new, 4 * sizeof(double));
@@ -106,7 +108,7 @@ void Rigid::record(void)
 	m_energy_data[2 * (m_step + 1) + 1] = 0;
 	m_energy_data[2 * (m_step + 1) + 0] = w_new.inner(m_J * w_new) / 2;
 }
-void Rigid::finish(void)
+void RigidBody::finish(void)
 {
 	//data
 	FILE* files[4];
@@ -135,16 +137,16 @@ void Rigid::finish(void)
 }
 
 //analysis
-math::mat3 Rigid::inertia(void) const
+math::mat3 RigidBody::inertia(void) const
 {
 	return m_J;
 }
-math::mat3 Rigid::damping(void) const
+math::mat3 RigidBody::damping(void) const
 {
 	const math::vec3 w(m_velocity_new);
 	return w.spin() * m_J + m_J * w.spin() - (m_J * w).spin();
 }
-math::mat3 Rigid::stiffness(void) const
+math::mat3 RigidBody::stiffness(void) const
 {
 	const math::quat q(m_state_new);
 	const math::vec3 w(m_velocity_new);

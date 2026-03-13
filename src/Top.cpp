@@ -1,8 +1,9 @@
 //std
 #include <cmath>
+#include <cstdio>
 
-//rigid
-#include "rigid-body/inc/Top.hpp"
+//Rigid
+#include "Rigid-body/inc/Top.hpp"
 
 //constructors
 Top::Top(void) : m_position_data(nullptr)
@@ -19,7 +20,7 @@ Top::~Top(void)
 //solver
 void Top::setup(void)
 {
-	Rigid::setup();
+	RigidBody::setup();
 	delete[] m_position_data;
 	m_position_data = new double[3 * (m_steps + 1)];
 	m_me = [this](double t, math::quat q){
@@ -40,7 +41,7 @@ void Top::setup(void)
 }
 void Top::record(void)
 {
-	Rigid::record();
+	RigidBody::record();
 	const double g = 9.81;
 	math::vec3(m_position_data + 3 * (m_step + 1)) = math::quat(m_state_new).rotate({0, 0, -m_l});
 	m_energy_data[2 * (m_step + 1) + 1] = -m_M * g * (m_position_data[3 * (m_step + 1) + 2] + m_l) + m_energy_data[0];
@@ -49,7 +50,7 @@ void Top::finish(void)
 {
 	//data
 	char path[200];
-	Rigid::finish();
+	RigidBody::finish();
 	sprintf(path, "data/%s-position.dat", m_label);
 	//write
 	FILE* file = fopen(path, "w");

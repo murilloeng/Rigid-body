@@ -1,8 +1,8 @@
 //std
 #include <algorithm>
 
-//rigid body
-#include "rigid-body/inc/Interval.hpp"
+//Rigid body
+#include "Rigid-body/inc/Interval.hpp"
 
 //constructors
 Interval::Interval(void) : m_min(0), m_max(0)

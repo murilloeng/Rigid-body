@@ -3,19 +3,19 @@
 //std
 #include <functional>
 
-//math
-#include "Math/inc/linear/vec3.hpp"
-#include "Math/inc/linear/quat.hpp"
-#include "Math/inc/linear/mat3.hpp"
+//Math
+#include "Math/Math/inc/linear/vec3.hpp"
+#include "Math/Math/inc/linear/quat.hpp"
+#include "Math/Math/inc/linear/mat3.hpp"
 
-class Rigid
+class RigidBody
 {
 public:
 	//constructor
-	Rigid(void);
+	RigidBody(void);
 
 	//destructor
-	virtual ~Rigid(void);
+	virtual ~RigidBody(void);
 
 	//solver
 	void solve(void);

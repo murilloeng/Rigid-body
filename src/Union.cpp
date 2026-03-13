@@ -1,5 +1,8 @@
-//rigid-body
-#include "rigid-body/inc/Union.hpp"
+//std
+#include <cstdint>
+
+//Rigid-body
+#include "Rigid-body/inc/Union.hpp"
 
 //constructors
 Union::Union(void)
