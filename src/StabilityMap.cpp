@@ -78,7 +78,7 @@ static void callback_keyboard(GLFWwindow* window, int32_t key, int32_t scancode,
 		glfwGetWindowSize(window, &width, &height);
 		GLubyte* pixels = new GLubyte[3 * width * height];
 		glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-		stbi_write_png("StabilityMap.png", width, height, 3, pixels, 3 * width);
+		stbi_write_png("stability-map.png", width, height, 3, pixels, 3 * width);
 		delete[] pixels;
 	}
 }
