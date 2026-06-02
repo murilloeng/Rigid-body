@@ -5,7 +5,7 @@
 #include <cstring>
 
 //canvas
-#include "Canvas/Canvas/inc/Objects/Object.hpp"
+#include "Canvas/inc/Objects/Object.hpp"
 
 //Rigid
 #include "Rigid-body/inc/RigidBody.hpp"
@@ -35,20 +35,20 @@ void RigidBody::solve(void)
 	//data
 	const double b = 0.25;
 	const double g = 0.50;
-	math::vec3 v, r, dv, me;
-	math::mat3 M, C, K, S, Ke;
-	math::quat q_old(m_state_old), q_new(m_state_new);
-	math::vec3 w_old(m_velocity_old), w_new(m_velocity_new);
-	math::vec3 a_old(m_acceleration_old), a_new(m_acceleration_new);
+	math::Vec3 v, r, dv, me;
+	math::Mat3 M, C, K, S, Ke;
+	math::Quat q_old(m_state_old), q_new(m_state_new);
+	math::Vec3 w_old(m_velocity_old), w_new(m_velocity_new);
+	math::Vec3 a_old(m_acceleration_old), a_new(m_acceleration_new);
 	//initial
 	me.zeros();
 	Ke.zeros();
 	if(m_me) me = m_me(0.0, q_old);
-	math::quat(m_state_data + 0) = q_old;
-	math::vec3(m_velocity_data + 0) = w_old;
+	math::Quat(m_state_data + 0) = q_old;
+	math::Vec3(m_velocity_data + 0) = w_old;
 	m_energy_data[0] = w_old.inner(m_J * w_old) / 2;
 	m_J.solve(a_old, me - w_old.cross(m_J * w_old));
-	a_new = math::vec3(m_acceleration_data + 0) = a_old;
+	a_new = math::Vec3(m_acceleration_data + 0) = a_old;
 	//integration
 	for(m_step = 0; m_step < m_steps; m_step++)
 	{
@@ -98,7 +98,7 @@ void RigidBody::setup(void)
 }
 void RigidBody::record(void)
 {
-	const math::vec3 w_new(m_velocity_new);
+	const math::Vec3 w_new(m_velocity_new);
 	memcpy(m_state_old, m_state_new, 4 * sizeof(double));
 	memcpy(m_velocity_old, m_velocity_new, 3 * sizeof(double));
 	memcpy(m_acceleration_old, m_acceleration_new, 3 * sizeof(double));
@@ -137,19 +137,19 @@ void RigidBody::finish(void)
 }
 
 //analysis
-math::mat3 RigidBody::inertia(void) const
+math::Mat3 RigidBody::inertia(void) const
 {
 	return m_J;
 }
-math::mat3 RigidBody::damping(void) const
+math::Mat3 RigidBody::damping(void) const
 {
-	const math::vec3 w(m_velocity_new);
+	const math::Vec3 w(m_velocity_new);
 	return w.spin() * m_J + m_J * w.spin() - (m_J * w).spin();
 }
-math::mat3 RigidBody::stiffness(void) const
+math::Mat3 RigidBody::stiffness(void) const
 {
-	const math::quat q(m_state_new);
-	const math::vec3 w(m_velocity_new);
-	const math::vec3 a(m_acceleration_new);
+	const math::Quat q(m_state_new);
+	const math::Vec3 w(m_velocity_new);
+	const math::Vec3 a(m_acceleration_new);
 	return m_J * a.spin() + w.spin() * m_J * w.spin() - (m_J * w).spin() * w.spin() - m_Ke(0, q);
 }

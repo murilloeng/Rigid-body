@@ -46,7 +46,7 @@ canvas :
 $(out) : math canvas $(obj)
 	@echo 'executable($(mode)): $@'
 	@mkdir -p $(dir $@) && rm -rf $@
-	@$(CXX) -fopenmp -o $(out) $(obj) ../Math/Math/dist/$(mode)/libmath.so ../Canvas/Canvas/dist/$(mode)/libcanvas.so $(LIBS)
+	@$(CXX) -fopenmp -o $(out) $(obj) ../Math/dist/$(mode)/libmath.so ../Canvas/dist/$(mode)/libcanvas.so $(LIBS)
 
 build/$(mode)/%.o : src/%.cpp build/$(mode)/%.d
 	@echo 'compiling($(mode)): $<'

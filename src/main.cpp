@@ -69,8 +69,8 @@ static void test_tilted(double g1, double g2, double wp, bool axis, bool stabili
 	const double m = 1.00e+00;
 	const double J3 = 1.00e+00;
 	const double tr = 1.00e-05;
-	const math::vec3 e1 = {1, 0, 0};
-	const math::vec3 e2 = {0, 1, 0};
+	const math::Vec3 e1 = {1, 0, 0};
+	const math::Vec3 e2 = {0, 1, 0};
 	const double gp = axis ? g1 : g2;
 	const double ws = (stability ? 1.01 : 0.99) * wp;
 	const double bp = acos(1 / (ws * ws * (1 - gp)));
@@ -89,7 +89,7 @@ static void test_tilted(double g1, double g2, double wp, bool axis, bool stabili
 	top.m_velocity_old[2] = ws * wr * cos(bp);
 	top.m_velocity_old[0] = axis ? -ws * wr * (sin(bp) + tr) : 0;
 	top.m_velocity_old[1] = axis ? 0 : +ws * wr * (sin(bp) + tr);
-	math::quat(top.m_state_old) = math::quat(bp, axis ? e2 : e1);
+	math::Quat(top.m_state_old) = math::Quat(bp, axis ? e2 : e1);
 	sprintf(top.m_label, "tests/tilted-%d-%.2lf-%.2lf-%.2lf-%s", axis, g1, g2, wp, str);
 	//solve
 	top.setup();

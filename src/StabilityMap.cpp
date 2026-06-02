@@ -11,11 +11,11 @@
 #include "Rigid-body/inc/StabilityMap.hpp"
 
 //Canvas
-#include "Canvas/Canvas/inc/API/Loader.hpp"
-#include "Canvas/Canvas/inc/Buffers/VAO.hpp"
-#include "Canvas/Canvas/inc/Scene/Scene.hpp"
-#include "Canvas/Canvas/inc/Objects/Object.hpp"
-#include "Canvas/Canvas/inc/Shaders/Shader.hpp"
+#include "Canvas/inc/API/Loader.hpp"
+#include "Canvas/inc/Buffers/VAO.hpp"
+#include "Canvas/inc/Scene/Scene.hpp"
+#include "Canvas/inc/Objects/Object.hpp"
+#include "Canvas/inc/Shaders/Shader.hpp"
 
 //object
 namespace
@@ -30,7 +30,7 @@ namespace
 		~StabilityMapObject(void);
 
 		//draw
-		void draw(void) const override;
+		void draw(void) override;
 
 	private:
 		//data
@@ -51,7 +51,7 @@ namespace
 	}
 
 	//draw
-	void StabilityMapObject::draw(void) const
+	void StabilityMapObject::draw(void)
 	{
 		m_vao.bind();
 		m_shader.bind();
@@ -160,7 +160,7 @@ void StabilityMap::setup_scene(void)
 	int32_t width, height;
 	m_scene = new canvas::Scene;
 	m_ubo = new canvas::buffers::UBO;
-	canvas::shaders::Shader::path("shd/");
+	canvas::shaders::Shader::add_path("shd/");
 	glfwGetWindowSize(m_window, &width, &height);
 	//setup
 	m_ubo->bind_base(0);

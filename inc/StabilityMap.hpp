@@ -7,8 +7,8 @@
 #include <GLFW/glfw3.h>
 
 //Canvas
-#include "Canvas/Canvas/inc/Buffers/UBO.hpp"
-#include "Canvas/Canvas/inc/Scene/Scene.hpp"
+#include "Canvas/inc/Buffers/UBO.hpp"
+#include "Canvas/inc/Scene/Scene.hpp"
 
 class StabilityMap
 {
